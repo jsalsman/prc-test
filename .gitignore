@@ -3,6 +3,12 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Images (binary files may NOT be in pull requests)
+*.png
+*.jpg
+*.jpeg
+*.tiff
+
 # C extensions
 *.so
 
