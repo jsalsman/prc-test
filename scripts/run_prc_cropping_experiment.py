@@ -146,8 +146,10 @@ def run_decode(
         str(args.nowm),
         "--prc_t",
         str(args.prc_t),
+        "--exp_id",
+        exp_id,
         "--test_path",
-        f"crop_{keep_pct}",
+        str(Path("results") / exp_id / f"crop_{keep_pct}"),
     ]
     subprocess.run(cmd, check=True, cwd=decode_script.parent)
     decoded_file = decode_script.parent / "decoded.txt"
@@ -219,7 +221,7 @@ def write_raw_csv(
                     "method": args.method,
                     "nowm": args.nowm,
                     "prc_t": args.prc_t,
-                    "test_path": f"crop_{keep_pct}",
+                    "test_path": str(Path("results") / exp_id / f"crop_{keep_pct}"),
                 }
             )
 
