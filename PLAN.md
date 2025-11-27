@@ -56,8 +56,7 @@ NOWM = 0
 KEEP_PERCENTAGES = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
 
 # --- Step 1: Image Generation and Initial Detection (for each bit length) ---
-print("
---- Step 1: Generating watermarked images ---")
+print("--- Step 1: Generating watermarked images ---")
 for bit_length_prc_t in [512, 2500]: # prc_t parameter is used to differentiate bit lengths
     print(f"Generating {bit_length_prc_t}-bit watermarked images...")
     encode_cmd = [
@@ -74,8 +73,7 @@ for bit_length_prc_t in [512, 2500]: # prc_t parameter is used to differentiate 
     print(f"Finished generating {bit_length_prc_t}-bit watermarked images.")
 
 # --- Step 2: Cropping and Detection ---
-print("
---- Step 2: Cropping images and running detection ---")
+print("--- Step 2: Cropping images and running detection ---")
 for bit_length_prc_t in [512, 2500]:
     print(f"Processing {bit_length_prc_t}-bit images...")
     run_experiment_cmd = [
@@ -108,8 +106,7 @@ for bit_length_prc_t in [512, 2500]:
     print(f"Finished cropping and detection for {bit_length_prc_t}-bit images.")
 
 # --- Step 3: Aggregation and Robustness Thresholds ---
-print("
---- Step 3: Aggregating results and determining thresholds ---")
+print("--- Step 3: Aggregating results and determining thresholds ---")
 analyze_cmd = [
     sys.executable,
     str(SCRIPTS_DIR / 'analyze_cropping_results.py'),
@@ -120,8 +117,7 @@ subprocess.run(analyze_cmd, check=True)
 print("Results aggregated and thresholds determined.")
 
 # --- Step 4: Plotting and Visualization ---
-print("
---- Step 4: Generating plots ---")
+print("--- Step 4: Generating plots ---")
 plot_cmd = [
     sys.executable,
     str(SCRIPTS_DIR / 'plot_cropping_results.py'),
@@ -132,26 +128,21 @@ subprocess.run(plot_cmd, check=True)
 print("Plots generated.")
 
 # --- Step 5: Displaying Results (Table and Plots) ---
-print("
---- Step 5: Displaying Results ---")
+print("--- Step 5: Displaying Results ---")
 
-print("
---- Aggregated 512-bit Results ---")
+print("--- Aggregated 512-bit Results ---")
 aggregated_512_df = pd.read_csv(RESULTS_DIR / 'prc_cropping_results_512bits.csv')
 print(aggregated_512_df.to_markdown(index=False))
 
-print("
---- Aggregated 2500-bit Results ---")
+print("--- Aggregated 2500-bit Results ---")
 aggregated_2500_df = pd.read_csv(RESULTS_DIR / 'prc_cropping_results_2500bits.csv')
 print(aggregated_2500_df.to_markdown(index=False))
 
-print("
---- Robustness Thresholds ---")
+print("--- Robustness Thresholds ---")
 thresholds_df = pd.read_csv(RESULTS_DIR / 'prc_cropping_thresholds.csv')
 print(thresholds_df.to_markdown(index=False))
 
-print("
---- Generated Plots ---")
+print("--- Generated Plots ---")
 # Display 512-bit plot
 plot_512_path = RESULTS_DIR / 'prc_cropping_summary_512bits.png'
 if plot_512_path.exists():
@@ -172,8 +163,7 @@ Displaying 2500-bit watermark plot from {plot_2500_path}:")
 else:
     print(f"2500-bit plot not found at {plot_2500_path}")
 
-print("
-Experiment complete.")
+print("Experiment complete.")
 ```
 
 Basic PRC-Watermark usage you should rely on
