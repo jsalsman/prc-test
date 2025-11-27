@@ -206,7 +206,6 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 # Experiment runtime artifacts
-data/
 results/**/raw_images/
 results/**/plots/*.png
 results/**/plots/*.jpg
@@ -218,5 +217,4 @@ results/cropping/*.jpeg
 results/cropping/*.bmp
 results/cropping/*.gif
 results/cropping/*.tiff
-PRC-Watermark/results/
-PRC-Watermark/keys/
+
