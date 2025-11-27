@@ -6,6 +6,8 @@ This repository (`prc-test`) is dedicated to experimentally evaluating the robus
 
 To run the full cropping robustness experiment:
 
+### NOTE: I have already added this cell to the end of the notebook, but I have not run it because I ran out of free Colab GPU credits. -jsalsman
+
 1.  Open the `PLAN.md` file in this repository.
 2.  Locate the "Master Script for Cropping Robustness Experiment (Colab)" section.
 3.  Copy the entire Python code block from that section.
