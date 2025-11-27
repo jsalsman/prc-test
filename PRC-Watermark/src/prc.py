@@ -180,7 +180,7 @@ def Decode(decoding_key, posteriors, print_progress=False, max_bp_iter=None):
     # Solve the system.
     if print_progress:
         print("Solving linear system...")
-    recovered_string = np.linalg.solve(ordered_generator_matrix[top_invertible_rows], GF(ordered_x_decoded[top_invertible_rows]))
+    recovered_string = np.linalg.solve(ordered_generator_matrix[top_invertible_rows], GF(ordered_x_decoded[top_invertible_rows].astype(int)))
 
     if not (recovered_string[:len(test_bits)] == test_bits).all():
         return None
