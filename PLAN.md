@@ -40,7 +40,7 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# --- Configuration --- #
+# --- Configuration ---
 # Set the base directory for the prc-test repository
 ROOT_DIR = Path('/content/prc-test')
 PRC_WATERMARK_DIR = ROOT_DIR / 'PRC-Watermark'
@@ -57,9 +57,9 @@ FPR = 1e-05
 NOWM = 0
 KEEP_PERCENTAGES = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
 
-# --- Step 1: Image Generation and Initial Detection (for each bit length) ---
+# Step 1: Image Generation and Initial Detection (for each bit length)
 print("--- Step 1: Generating watermarked images ---")
-for bit_length in [512, 2500]: # prc_t parameter is used to differentiate bit lengths
+for bit_length in [512, 2500]:
     print(f"Generating {bit_length}-bit watermarked images...")
     encode_cmd = [
         sys.executable,
@@ -81,7 +81,7 @@ for bit_length in [512, 2500]: # prc_t parameter is used to differentiate bit le
 
     print(f"Finished generating {bit_length}-bit watermarked images.")
 
-# --- Step 2: Cropping and Detection ---
+# Step 2: Cropping and Detection
 print("--- Step 2: Cropping images and running detection ---")
 for bit_length in [512, 2500]:
     print(f"Processing {bit_length}-bit images...")
@@ -110,10 +110,18 @@ for bit_length in [512, 2500]:
     raw_csv_path = RESULTS_DIR / f'prc_cropping_raw_{bit_length}bits.csv'
     run_experiment_cmd += ['--raw-out', str(raw_csv_path)]
 
-    subprocess.run(run_experiment_cmd, check=True)
+    try:
+        subprocess.run(run_experiment_cmd, check=True, cwd=PRC_WATERMARK_DIR,
+                       capture_output=True, text=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running cropping experiment for {bit_length}-bit images:")
+        print(f"STDOUT: {e.stdout}")
+        print(f"STDERR: {e.stderr}")
+        raise # Re-raise the exception after printing details
+
     print(f"Finished cropping and detection for {bit_length}-bit images.")
 
-# --- Step 3: Aggregation and Robustness Thresholds ---
+# Step 3: Aggregation and Robustness Thresholds
 print("--- Step 3: Aggregating results and determining thresholds ---")
 analyze_cmd = [
     sys.executable,
@@ -125,7 +133,7 @@ analyze_cmd = [
 subprocess.run(analyze_cmd, check=True)
 print("Results aggregated and thresholds determined.")
 
-# --- Step 4: Plotting and Visualization ---
+# Step 4: Plotting and Visualization
 print("--- Step 4: Generating plots ---")
 plot_cmd = [
     sys.executable,
@@ -137,7 +145,7 @@ plot_cmd = [
 subprocess.run(plot_cmd, check=True)
 print("Plots generated.")
 
-# --- Step 5: Displaying Results (Table and Plots) ---
+# Step 5: Displaying Results (Table and Plots)
 print("--- Step 5: Displaying Results ---")
 
 print("--- Aggregated 512-bit Results ---")
