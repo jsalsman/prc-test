@@ -8,7 +8,6 @@ from typing import Dict, List
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from convert_base64 import encode_file
 
 RESULTS_DIR = Path(__file__).resolve().parent.parent / "results" / "cropping"
 TARGET_LEVELS = [1.0, 0.99, 0.95, 0.90]
@@ -32,11 +31,6 @@ def parse_args() -> argparse.Namespace:
         default=RESULTS_DIR,
         help="Directory for plot outputs",
     )
-    parser.add_argument(
-        "--base64",
-        action="store_true",
-        help="Encode generated PNGs into .base64 and delete the original PNG",
-    )
     return parser.parse_args()
 
 
@@ -55,7 +49,7 @@ def threshold_marks(df: pd.DataFrame) -> Dict[float, int | None]:
     return marks
 
 
-def plot_curve(df: pd.DataFrame, bit_length: int, output_dir: Path, use_base64: bool) -> Path:
+def plot_curve(df: pd.DataFrame, bit_length: int, output_dir: Path) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     png_path = output_dir / f"prc_cropping_summary_{bit_length}bits.png"
 
@@ -78,10 +72,6 @@ def plot_curve(df: pd.DataFrame, bit_length: int, output_dir: Path, use_base64: 
     fig.tight_layout()
     fig.savefig(png_path, dpi=200)
     plt.close(fig)
-
-    if use_base64:
-        encoded = encode_file(png_path, delete_original=True)
-        return encoded
     return png_path
 
 
@@ -93,7 +83,7 @@ def main() -> None:
             print(f"[WARN] Skipping empty results: {path}")
             continue
         bit_length = int(df["bit_length"].iloc[0])
-        encoded_path = plot_curve(df, bit_length, args.output_dir, args.base64)
+        encoded_path = plot_curve(df, bit_length, args.output_dir)
         print(f"Wrote plot to {encoded_path}")
 
 

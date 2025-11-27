@@ -14,8 +14,8 @@ Repository layout (expected)
     - prc_cropping_raw_2500bits.csv
     - prc_cropping_results_512bits.csv
     - prc_cropping_results_2500bits.csv
-    - prc_cropping_summary_512bits.png.base64
-    - prc_cropping_summary_2500bits.png.base64
+    - prc_cropping_summary_512bits.png
+    - prc_cropping_summary_2500bits.png
     - REPORT.md
 - scripts/ (optional; orchestration, plotting, utilities)
 - data/ (runtime data only; should be gitignored)
@@ -29,19 +29,13 @@ Repository layout (expected)
 
 Binary and image file policy
 
-- Pull requests must not contain any binary or image files. In particular, do not commit:
-  - Image formats such as .png, .jpg, .jpeg, .gif, .bmp
-  - Document formats such as .pdf
+- Pull requests must not contain any experimental binary or image files. In particular, do not commit:
+  - Image formats such as .png, .jpg, .jpeg, .gif, .bmp (for experimental/intermediate results)
+  - Document formats such as .pdf (for experimental/intermediate results)
   - Model and data formats such as .pt, .pth, .ckpt, .bin, .onnx, .npy, .npz, .pkl
-  - Any other opaque binary format
+  - Any other opaque binary format (for experimental/intermediate results)
 - Experimental images and other binary artifacts (for example original watermarked images, cropped images, temporary plots) must live only in runtime directories that are gitignored (such as data/ and any temporary files in results/).
-- If a binary artifact must be preserved in the repository for review, it must be converted to a base64-encoded text file and the original binary deleted before committing. For example:
-  - Instead of committing prc_cropping_summary_512bits.png, commit prc_cropping_summary_512bits.png.base64 and delete the .png.
-  - Use the naming pattern “original_name.ext.base64” for any such files (for example .png.base64, .jpg.base64, .pdf.base64).
-- Before opening a pull request:
-  - Ensure that no .png, .jpg, .jpeg, .gif, .bmp, .pdf, model files, or similar binaries are staged.
-  - Either keep binaries only in gitignored paths, or convert them to .base64 and delete the originals before committing.
-- A helper script in scripts/ may automate base64 conversion, but the invariant is strict: pull requests must be text-only, with binary artifacts represented as base64 text files.
+- Final plot images (e.g., prc_cropping_summary_512bits.png) are allowed to be committed directly into the results/cropping/ directory.
 
 Primary agent: PRC Cropping Experiment Agent
 
@@ -194,11 +188,10 @@ For each plot:
 - Add reference lines at detection rates of 1.0, 0.99, 0.95, and 0.90.
 - Visually mark or annotate the robustness thresholds where these success levels are achieved.
 
-Handle plot files according to the binary policy:
+Handle plot files:
 
-- Initially, plots may be generated as .png files in results/cropping/ during local work.
-- Before committing, convert each .png to a base64 text file with the same name plus the .base64 suffix (for example prc_cropping_summary_512bits.png.base64).
-- Delete the original .png files and commit only the .base64 files.
+- Plot images should be generated as .png files directly into results/cropping/.
+- Final plot files (PNG format) are allowed to be committed.
 
 9) Reporting
 
@@ -210,7 +203,7 @@ Prepare a concise report in results/cropping/REPORT.md that includes:
   - Number of images per bit length.
 - The detection-rate tables per bit length and keep percentage.
 - The robustness-threshold table summarizing the keep percentage at which detection remains at or above 100, 99, 95, and 90 percent, for each bit length.
-- References to the plot artifacts by filename (the .png.base64 files), along with a brief explanation of how to decode them back into viewable .png files using standard base64 tools.
+- References to the plot artifacts by filename (the .png files).
 - Any noteworthy findings or anomalies, such as:
   - Differences in robustness between 512-bit and 2500-bit watermarks.
   - Unexpected failures at high keep percentages.
@@ -220,4 +213,4 @@ Expectations
 - Prefer simple, reproducible scripts as entry points, such as a single driver script that runs the full experiment for a given bit length.
 - Keep configuration (paths, prompts, number of images, crop percentages) centralized so that the experiment can be rerun or extended easily.
 - Do not modify the cryptographic or detection logic of PRC-Watermark; all changes should be in orchestration, data handling, or plotting.
-- Maintain the strict invariant that pull requests contain no binary or image files; only text files, including base64 encodings of any necessary binary artifacts, may be committed.
+- Maintain the strict invariant that pull requests contain no experimental binary or image files; only text files and final plot files (PNG format) may be committed.
