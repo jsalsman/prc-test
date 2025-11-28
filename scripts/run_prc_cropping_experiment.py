@@ -39,7 +39,7 @@ RESULTS_DIR = ROOT / "results" / "cropping"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run cropping + detection for PRC watermarking")
-    parser.add_argument("--bit-length", type=int, required=True, help="Watermark message length (metadata only)")
+    parser.add_argument("--bit-length", type=int, default=512, help="Watermark message length (metadata only)")
     parser.add_argument("--test-num", type=int, required=True, help="Number of images encoded/decoded")
     parser.add_argument("--exp-id", type=str, help="Override experiment id (defaults to PRC naming convention)")
     parser.add_argument("--method", type=str, default="prc", help="Method passed to encode/decode (default: prc)")
@@ -99,7 +99,7 @@ def parse_args() -> argparse.Namespace:
 def build_exp_id(args: argparse.Namespace) -> str:
     if args.exp_id:
         return args.exp_id
-    return f"{args.method}_num_{args.test_num}_steps_{args.inf_steps}_fpr_{args.fpr}_nowm_{args.nowm}"
+    return f"{args.method}_num_{args.test_num}_steps_{args.inf_steps}_fpr_{args.fpr}_nowm_{args.nowm}_bits_{args.bit_length}"_bits_{args.bit_length}
 
 
 def call_cropper(
@@ -144,6 +144,10 @@ def run_decode(
         str(args.fpr),
         "--nowm",
         str(args.nowm),
+        "--bits",
+
+        str(args.bit_length),
+
         "--prc_t",
         str(args.prc_t),
         "--test_path",

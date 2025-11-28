@@ -22,6 +22,9 @@ parser.add_argument('--inf_steps', type=int, default=50)
 parser.add_argument('--nowm', type=int, default=0)
 parser.add_argument('--fpr', type=float, default=0.00001)
 parser.add_argument('--prc_t', type=int, default=3)
+    parser.add_argument('--bits', type=int, default=512, help='Message length in bits')
+    parser.add_argument('--bits', type=int, default=512, help='Message length in bits')
+    parser.add_argument('--bits', type=int, default=512, help='Message length in bits')
 args = parser.parse_args()
 print(args)
 
@@ -35,11 +38,11 @@ dataset_id = args.dataset_id
 nowm = args.nowm
 fpr = args.fpr
 prc_t = args.prc_t
-exp_id = f'{method}_num_{test_num}_steps_{args.inf_steps}_fpr_{fpr}_nowm_{nowm}'
+exp_id = f'{method}_num_{test_num}_steps_{args.inf_steps}_fpr_{fpr}_nowm_{nowm}_bits_{args.bits}'
 
 if method == 'prc':
     if not os.path.exists(f'keys/{exp_id}.pkl'):  # Generate watermark key for the first time and save it to a file
-        (encoding_key_ori, decoding_key_ori) = KeyGen(n, false_positive_rate=fpr, t=prc_t)  # Sample PRC keys
+        (encoding_key_ori, decoding_key_ori) = KeyGen(n, false_positive_rate=fpr, t=prc_t, message_length=args.bits)  # Sample PRC keys
         with open(f'keys/{exp_id}.pkl', 'wb') as f:  # Save the keys to a file
             pickle.dump((encoding_key_ori, decoding_key_ori), f)
         with open(f'keys/{exp_id}.pkl', 'rb') as f:  # Load the keys from a file
