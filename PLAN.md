@@ -69,6 +69,7 @@ for bit_length in [512, 2500]:
         '--inf_steps', str(INF_STEPS),
         '--nowm', str(NOWM),
         '--fpr', str(FPR),
+        '--bits', str(bit_length),
     ]
     try:
         subprocess.run(encode_cmd, check=True, cwd=PRC_WATERMARK_DIR,
@@ -93,6 +94,7 @@ for bit_length in [512, 2500]:
         '--inf-steps', str(INF_STEPS),
         '--fpr', str(FPR),
         '--nowm', str(NOWM),
+        '--bits', str(bit_length),
         '--keep-percentages',
     ] + [str(p) for p in KEEP_PERCENTAGES]
 

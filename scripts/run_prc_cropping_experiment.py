@@ -14,8 +14,9 @@ Example usage (512-bit experiment with default PRC settings):
 ```bash
 python scripts/run_prc_cropping_experiment.py \
     --bit-length 512 \
+    --bits 512 \
     --test-num 200 \
-    --exp-id prc_num_200_steps_50_fpr_1e-05_nowm_0
+    --exp-id prc_num_200_steps_50_fpr_1e-05_nowm_0_bits_512
 ```
 
 If you used non-default PRC settings (e.g., a different `--fpr`, `--inf_steps`,
@@ -40,6 +41,7 @@ RESULTS_DIR = ROOT / "results" / "cropping"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run cropping + detection for PRC watermarking")
     parser.add_argument("--bit-length", type=int, required=True, help="Watermark message length (metadata only)")
+    parser.add_argument("--bits", type=int, help="Watermark message length passed to encode/decode (default: --bit-length)")
     parser.add_argument("--test-num", type=int, required=True, help="Number of images encoded/decoded")
     parser.add_argument("--exp-id", type=str, help="Override experiment id (defaults to PRC naming convention)")
     parser.add_argument("--method", type=str, default="prc", help="Method passed to encode/decode (default: prc)")
@@ -96,10 +98,21 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def build_exp_id(args: argparse.Namespace) -> str:
+def resolve_bit_length(args: argparse.Namespace) -> int:
+    if args.bits is None:
+        return args.bit_length
+    if args.bit_length != args.bits:
+        raise ValueError("--bits must match --bit-length when both are provided")
+    return args.bits
+
+
+def build_exp_id(args: argparse.Namespace, bit_length: int) -> str:
     if args.exp_id:
         return args.exp_id
-    return f"{args.method}_num_{args.test_num}_steps_{args.inf_steps}_fpr_{args.fpr}_nowm_{args.nowm}"
+    return (
+        f"{args.method}_num_{args.test_num}_steps_{args.inf_steps}_fpr_"
+        f"{args.fpr}_nowm_{args.nowm}_bits_{bit_length}"
+    )
 
 
 def call_cropper(
@@ -129,6 +142,7 @@ def run_decode(
     decode_script: Path,
     exp_id: str,
     keep_pct: int,
+    bit_length: int,
     args: argparse.Namespace,
 ) -> List[bool]:
     cmd = [
@@ -146,6 +160,8 @@ def run_decode(
         str(args.nowm),
         "--prc_t",
         str(args.prc_t),
+        "--bits",
+        str(bit_length),
         "--test_path",
         f"crop_{keep_pct}",
     ]
@@ -226,7 +242,8 @@ def write_raw_csv(
 
 def main() -> None:
     args = parse_args()
-    exp_id = build_exp_id(args)
+    bit_length = resolve_bit_length(args)
+    exp_id = build_exp_id(args, bit_length)
     input_dir = args.input_dir or (PRC_ROOT / "results" / exp_id / "original_images")
     output_root = input_dir.parent
 
@@ -239,14 +256,14 @@ def main() -> None:
             resize_back=args.resize_back,
         )
 
-    raw_out = ensure_raw_out(args.bit_length, args.raw_out)
+    raw_out = ensure_raw_out(bit_length, args.raw_out)
     for keep_pct in args.keep_percentages:
-        detections = run_decode(args.decode_script, exp_id, keep_pct, args)
+        detections = run_decode(args.decode_script, exp_id, keep_pct, bit_length, args)
         if len(detections) != args.test_num:
             raise RuntimeError(
                 f"Expected {args.test_num} detections for crop {keep_pct}, got {len(detections)}"
             )
-        write_raw_csv(raw_out, args.bit_length, exp_id, args, keep_pct, detections)
+        write_raw_csv(raw_out, bit_length, exp_id, args, keep_pct, detections)
         print(f"Processed keep {keep_pct}% -> {sum(detections)}/{len(detections)} detected")
 
     print(f"Raw detection data written to {raw_out}")

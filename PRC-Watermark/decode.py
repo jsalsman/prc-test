@@ -21,6 +21,7 @@ parser.add_argument('--inf_steps', type=int, default=50)
 parser.add_argument('--nowm', type=int, default=0)
 parser.add_argument('--fpr', type=float, default=0.00001)
 parser.add_argument('--prc_t', type=int, default=3)
+parser.add_argument('--bits', type=int, default=512, help='Watermark message length')
 
 parser.add_argument('--test_path', type=str, default='original_images')
 args = parser.parse_args()
@@ -36,7 +37,8 @@ dataset_id = args.dataset_id
 nowm = args.nowm
 fpr = args.fpr
 prc_t = args.prc_t
-exp_id = f'{method}_num_{test_num}_steps_{args.inf_steps}_fpr_{fpr}_nowm_{nowm}'
+bits = args.bits
+exp_id = f'{method}_num_{test_num}_steps_{args.inf_steps}_fpr_{fpr}_nowm_{nowm}_bits_{bits}'
 
 with open(f'keys/{exp_id}.pkl', 'rb') as f:
     encoding_key, decoding_key = pickle.load(f)
